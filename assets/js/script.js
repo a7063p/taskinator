@@ -62,8 +62,9 @@ var createTaskEl = function (taskDataObj) {
         listItemEl.appendChild(taskInfoEl);
 
         taskDataObj.id = taskIdCounter;
-        tasks.push(taskDataObj);  
-         
+        tasks.push(taskDataObj); 
+        
+        saveTasks();        
 
         var taskActionsEl = createTaskActions(taskIdCounter);         
         listItemEl.appendChild(taskActionsEl);
@@ -160,11 +161,12 @@ var deleteTask = function(taskId) {
     // reassign tasks array to be the same as updatedTaskArr
     tasks = updatedTaskArr;
     
+    saveTasks();
 };
 
 
 var editTask = function(taskId) {
-    console.log("editing task#" + taskId);
+    
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']")
     
     var taskName = taskSelected.querySelector("h3.task-name").textContent;    
@@ -192,6 +194,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
             tasks[i].type = taskType;
         }
     };
+    saveTasks();
     
     alert("task updated!");
     formEl.removeAttribute("data-task-id");
@@ -200,7 +203,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
 };
 
 var taskStatusChangeHandler = function(event) {
-    // console.log(event.target, event.target.getAttribute("data-task-id"));
+    
     // get the task items ID
     var taskId = event.target.getAttribute("data-task-id");
 
@@ -226,7 +229,7 @@ for (var i = 0; i < tasks.length; i++) {
         tasks[i].status = statusValue;
     }
 };
-
+saveTasks();
 
 };
 
@@ -235,7 +238,7 @@ var dragTaskHandler = function(event) {
     event.dataTransfer.setData("text/plain", taskId);
 
     var getId = event.dataTransfer.getData("text/plain");
-    console.log("getId:", getId, typeof getId);
+    
 };
 
 var dropZoneDragHandler = function (event) {
@@ -275,6 +278,7 @@ var dropTaskHandler = function (event) {
             tasks[i].status = statusSelectEl.value.toLowerCase();
         }        
     }
+    saveTasks()
 };
 
 var dragLeaveHandler = function(event) {
@@ -282,9 +286,11 @@ var dragLeaveHandler = function(event) {
     if (taskListEl) {
         taskListEl.removeAttribute("style");
     }
-}
+};
 
-
+var saveTasks = function() {
+    localStorage.setItem("tasks" , JSON.stringify(tasks));   
+};
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
